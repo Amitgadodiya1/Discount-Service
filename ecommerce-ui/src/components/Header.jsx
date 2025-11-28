@@ -5,7 +5,7 @@ export default function Header() {
   const navigate = useNavigate();
 
   const logout = () => {
-    localStorage.clear();
+    sessionStorage.clear();   // per-tab logout
     navigate("/");
   };
 

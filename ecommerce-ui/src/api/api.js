@@ -1,6 +1,6 @@
 export const api = async (path, method = "GET", body) => {
-  const userId = localStorage.getItem("userId");
-  const role = localStorage.getItem("role");
+  const userId = sessionStorage.getItem("userId");
+  const role = sessionStorage.getItem("role");
 
   try {
     const response = await fetch(`http://localhost:3000${path}`, {
@@ -17,13 +17,13 @@ export const api = async (path, method = "GET", body) => {
 
     if (!response.ok) {
       const errorObj = new Error(data.error || "API request failed");
-      errorObj.status = response.status;   // attach status
-      throw errorObj;                       // throw to caller
+      errorObj.status = response.status;
+      throw errorObj;
     }
 
     return { status: response.status, ...data };
   } catch (err) {
     console.error("API Error:", err.message);
-    throw err; // rethrow so component can handle
+    throw err;
   }
 };

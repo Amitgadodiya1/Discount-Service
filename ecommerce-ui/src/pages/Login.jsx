@@ -19,8 +19,8 @@ export default function Login() {
     setLoading(true);
 
     setTimeout(() => {
-      localStorage.setItem("userId", userId.trim());
-      localStorage.setItem("role", role);
+      sessionStorage.setItem("userId", userId.trim());
+      sessionStorage.setItem("role", role);
 
       toast.success(`Welcome ${role.toUpperCase()}!`);
 

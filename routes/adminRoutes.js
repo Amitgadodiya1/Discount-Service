@@ -5,7 +5,7 @@ const {
   canGenerateDiscountCode,
   createDiscountCode
 } = require("../services/discountService");
-const { authMiddleware, adminAccess } = require("../middleware/auth");
+const { authMiddleware, adminAccess, userAccess } = require("../middleware/auth");
 
 // Generate discount code (if Nth order, and no active code)
 /**
@@ -76,7 +76,7 @@ router.post("/discounts/generate",  authMiddleware, adminAccess,(req, res) => {
  *         description: Returns analytics including total sales and discount usage
  */
 // Stats
-router.get("/stats", authMiddleware, adminAccess,(req, res) => {
+router.get("/stats", authMiddleware,(req, res) => {
   const activeCode = stats.discountCodes.find(dc => !dc.used && !dc.expired)?.code || null;
 
   return res.json({
