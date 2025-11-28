@@ -4,6 +4,7 @@ const cors = require("cors");
 const cartRoutes = require("./routes/cartRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const { adminAccess, userAccess, authMiddleware } = require("./middleware/auth");
+const productRoutes = require("./routes/productRoutes");
 
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
@@ -21,7 +22,8 @@ app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(authMiddleware);
 
 // Protected API routes
-app.use("/api", userAccess, cartRoutes);
-app.use("/api/admin", adminAccess, adminRoutes);
+app.use("/api", productRoutes);
+app.use("/api", cartRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.listen(3000, () => console.log("Server running on port 3000"));
