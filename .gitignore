@@ -1,0 +1,46 @@
+# =========================
+# Node & npm
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# environment files
+.env
+.env.local
+.env.development
+.env.production
+
+# coverage reports (Jest)
+coverage/
+
+# logs
+logs
+*.log
+log.txt
+debug.log
+
+# editor metadata
+.vscode/
+.idea/
+*.swp
+
+# system files
+.DS_Store
+Thumbs.db
+
+# local files
+*.local
+*.pem
+
+# build outputs
+dist/
+build/
+
+# frontend (if created using Vite/React)
+frontend/node_modules/
+frontend/dist/
+
+# Postman artifacts / exports
+*.postman_collection.json.backup
