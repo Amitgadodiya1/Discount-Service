@@ -5,6 +5,7 @@ const {
   canGenerateDiscountCode,
   createDiscountCode
 } = require("../services/discountService");
+const { authMiddleware, adminAccess } = require("../middleware/auth");
 
 // Generate discount code (if Nth order, and no active code)
 /**
@@ -38,7 +39,7 @@ const {
  *       400:
  *         description: Not eligible to generate discount code now
  */
-router.post("/discounts/generate", (req, res) => {
+router.post("/discounts/generate",  authMiddleware, adminAccess,(req, res) => {
   if (!canGenerateDiscountCode()) {
     return res.status(400).json({
       error: "Not eligible to generate discount code right now"
@@ -75,13 +76,16 @@ router.post("/discounts/generate", (req, res) => {
  *         description: Returns analytics including total sales and discount usage
  */
 // Stats
-router.get("/stats", (req, res) => {
+router.get("/stats", authMiddleware, adminAccess,(req, res) => {
+  const activeCode = stats.discountCodes.find(dc => !dc.used && !dc.expired)?.code || null;
+
   return res.json({
     totalItemsSold: stats.totalItemsSold,
     totalPurchaseAmount: stats.totalPurchaseAmount,
     totalDiscountAmount: stats.totalDiscountAmount,
     totalOrdersPlaced: stats.totalOrdersPlaced,
-    discountCodes: stats.discountCodes
+    discountCodes: stats.discountCodes,
+    activeDiscountCode: activeCode
   });
 });
 

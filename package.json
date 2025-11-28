@@ -15,14 +15,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-   "dependencies": {
+  "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "yamljs": "^0.3.0"
   },
-    "devDependencies": {
+  "devDependencies": {
     "jest": "^30.2.0",
     "nodemon": "^3.1.11"
   },

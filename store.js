@@ -2,6 +2,7 @@
 
 const carts = new Map();   // userId -> { userId, items: [] }
 const orders = new Map();  // userId -> [order, order, ...]
+const products = [];
 
 const stats = {
   totalItemsSold: 0,
@@ -36,6 +37,7 @@ module.exports = {
   orders,
   stats,
   NTH_ORDER_FOR_DISCOUNT,
+  products,
   getOrCreateCart,
   addOrder
 };

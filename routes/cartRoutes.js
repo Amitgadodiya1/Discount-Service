@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const { addItemToCart, getCart, checkoutCart } = require("../services/cartService");
+const { authMiddleware, adminAccess,userAccess } = require("../middleware/auth");
+const { products } = require("../store"); // make sure products exported from store
 
 // Add item to cart
 /**
  * @swagger
  * /api/cart/items:
  *   post:
- *     summary: Add item to cart
+ *     summary: Add a product to the cart using productId (quantity required)
  *     tags: [Cart]
  *     parameters:
  *       - in: header
@@ -30,35 +32,44 @@ const { addItemToCart, getCart, checkoutCart } = require("../services/cartServic
  *             properties:
  *               productId:
  *                 type: string
- *               name:
- *                 type: string
- *               price:
- *                 type: number
+ *                 description: ID of the product to add
  *               quantity:
  *                 type: number
+ *                 description: Number of units to add
  *     responses:
  *       200:
- *         description: Item added to cart
+ *         description: Item successfully added to cart
+ *       400:
+ *         description: Invalid input or missing productId/quantity
+ *       404:
+ *         description: Product not found
  */
-router.post("/cart/items", (req, res) => {
+
+router.post("/cart/items",authMiddleware,userAccess,(req, res) => {
   const userId = req.userId;
-  const { productId, name, price, quantity } = req.body || {};
+  const { productId, quantity } = req.body || {};
 
-  if (!productId || !name || price == null) {
-    return res.status(400).json({
-      error: "productId, name and price are required"
-    });
+  if (!productId) {
+    return res.status(400).json({ error: "productId is required" });
   }
 
-  if (isNaN(price) || Number(price) < 0) {
-    return res.status(400).json({ error: "price must be a non-negative number" });
-  }
-
-  if (quantity != null && (isNaN(quantity) || Number(quantity) <= 0)) {
+  if (!quantity || isNaN(quantity) || Number(quantity) <= 0) {
     return res.status(400).json({ error: "quantity must be a positive number" });
   }
 
-  const cart = addItemToCart(userId, { productId, name, price, quantity });
+  // find product by id
+  const product = products.find(p => p.productId === productId);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  const cart = addItemToCart(userId, {
+    productId,
+    name: product.name,
+    price: product.price,
+    quantity: Number(quantity)
+  });
+
   return res.json({ cart });
 });
 /**

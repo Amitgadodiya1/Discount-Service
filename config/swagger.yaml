@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title:  Discount Service API Documentation
+  title: Discount Service API Documentation
   version: 1.0.0
-  description: API documentation for Cart, Checkout, Discount Generation and Admin stats
+  description: API documentation for Products, Cart, Checkout, Discount Generation, and Admin stats
 
 servers:
   - url: http://localhost:3000
@@ -23,10 +23,15 @@ security:
   - UserRoleHeader: []
 
 paths:
-  /api/cart/items:
+
+  # ---------- PRODUCTS ----------
+  /api/products:
     post:
-      summary: Add item to cart
-      tags: [Cart]
+      summary: Add a new product (Admin only)
+      tags: [Products]
+      security:
+        - UserIdHeader: []
+        - UserRoleHeader: []
       requestBody:
         required: true
         content:
@@ -40,24 +45,73 @@ paths:
                   type: string
                 price:
                   type: number
-                quantity:
-                  type: number
       responses:
         200:
-          description: Item added to cart
+          description: Product successfully added
+        403:
+          description: Access denied (Admin only)
+
+    get:
+      summary: Get all products (User/Admin access)
+      tags: [Products]
+      security:
+        - UserIdHeader: []
+        - UserRoleHeader: []
+      responses:
+        200:
+          description: Returns product list
+
+
+  # ---------- CART ----------
+  /api/cart/items:
+    post:
+      summary: Add item to cart using productId
+      tags: [Cart]
+      security:
+        - UserIdHeader: []
+        - UserRoleHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                  description: ID of the product to be added from product list
+                quantity:
+                  type: number
+                  description: Number of units to add to cart
+      responses:
+        200:
+          description: Item successfully added to cart
+        400:
+          description: Invalid input or missing data
+        404:
+          description: Product not found
+
 
   /api/cart:
     get:
       summary: Get user cart items
       tags: [Cart]
+      security:
+        - UserIdHeader: []
+        - UserRoleHeader: []
       responses:
         200:
-          description: Cart Details
+          description: Cart details returned
 
+
+  # ---------- CHECKOUT ----------
   /api/checkout:
     post:
-      summary: Checkout and apply discount if valid
-      tags: [Cart]
+      summary: Checkout cart and apply discount code if valid
+      tags: [Checkout]
+      security:
+        - UserIdHeader: []
+        - UserRoleHeader: []
       requestBody:
         content:
           application/json:
@@ -68,11 +122,13 @@ paths:
                   type: string
       responses:
         200:
-          description: Order placed
+          description: Order successfully placed
 
+
+  # ---------- ADMIN ----------
   /api/admin/discounts/generate:
     post:
-      summary: Generate discount code if eligible (Admin only)
+      summary: Generate discount code (Admin only)
       tags: [Admin]
       security:
         - UserIdHeader: []
@@ -80,14 +136,18 @@ paths:
       responses:
         200:
           description: Discount code generated
+        400:
+          description: Not eligible to generate code
+        403:
+          description: Access denied
 
   /api/admin/stats:
     get:
-      summary: Get total statistics (Admin only)
+      summary: Get statistics and analytics (Admin only)
       tags: [Admin]
       security:
         - UserIdHeader: []
         - UserRoleHeader: []
       responses:
         200:
-          description: Stats response
+          description: Statistics data returned
